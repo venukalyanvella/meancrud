@@ -1,0 +1,164 @@
+<div class="container-fluid">
+
+  <div class="row nav">
+    <div class="col-lg-9 ">
+      <h3 class="display-5 text-white "> MEAN CRUD </h3>
+    </div>
+    <div class="col-lg-3 ">
+      <button class="btn btn-danger " (click)="deleteAllEmp()"> Delete</button> &nbsp;
+      <button (click)="openModal()" class="btn btn-success " >Add New
+        Employee</button>
+    </div>
+  </div>
+  <div class="row nav">
+    <div class="col-lg-12">
+      <input type="search" name="Search" [(ngModel)]="SearchEmp" class="form-control mb-3 w-100"
+        placeholder="Search KeyWord" id="">
+    </div>
+  </div>
+  <hr>
+  <!-- //table -->
+  <div *ngIf="employee && employee.length > 0 else elseBlock">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th> <input type="checkbox" [checked]="isCheckboxChecked()"
+             (click)="AllCheckBoxChecked($event)"> </th>
+          <th> Name </th>
+          <th> Email </th>
+          <th> Address </th>
+          <th> Phone </th>
+          <th> Actions </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emp of employee  | filter:SearchEmp; let i = index;">
+          <td> <input type="checkbox" value="{{emp._id}}" [(ngModel)]="employee[i].checked"> </td>
+          <td> {{emp.username}} </td>
+          <td> {{emp.email}} </td>
+          <td> {{emp.address}} </td>
+          <td> {{emp.phone}} </td>
+          <td>
+            <a class="text-warning"  (click)="onSelect(emp)">  <i class="fa fa-pencil" aria-hidden="true"></i>
+            </a> &nbsp;
+            <a class="text-danger" (click)="deleteEmpByid(emp._id)"> <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <ng-template #elseBlock>
+    <span class=" text-center text-danger display-4"> --- No Records Found ---</span>
+  </ng-template>
+
+</div>
+
+
+
+<div id="myModal" class="modal" tabindex="-1" [style]="display" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+     <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"> Add Employee </h4>
+
+
+        <button type="button" (click)="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form #empForm="ngForm" novalidate>
+          <div class="form-group">
+            <input type="text" #name="ngModel"  name="username"
+             class="form-control" placeholder="Employee Name" [(ngModel)]="username" [class.is-invalid]="name.invalid && name.touched"
+              required>
+              <div *ngIf ="name.errors &&   name.touched">
+                <span *ngIf ="name.errors.required">
+                    please Enter Name
+                </span>
+              </div>
+          </div>
+          <div class="form-group">
+            <input type="email" #uemail="ngModel"   name="email" class="form-control" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}" placeholder="email" [(ngModel)]="email" [class.is-invalid]="uemail.invalid && uemail.touched" required>
+            <div *ngIf="uemail.errors &&  uemail.touched">
+              <span *ngIf="uemail.errors.required"> please Enter Email</span>
+              <span *ngIf="uemail.errors.pattern">invalid email</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <input type="text" #useraddress="ngModel"  name="address" class="form-control" placeholder="Address" [(ngModel)]="address"
+              required [class.is-invalid]="useraddress.invalid && useraddress.touched">
+              <div *ngIf="useraddress.errors &&  useraddress.touched "> 
+                <span *ngIf="useraddress.errors.required">Please Enter Address </span>
+              </div>
+          </div>
+          <div class="form-group">
+            <input type="number" #mobile="ngModel" name="phone" class="form-control" placeholder="phone number" [(ngModel)]="phone" minlength="10"
+              required [class.is-invalid]="mobile.invalid && mobile.touched">
+              <div *ngIf="mobile.errors &&  mobile.touched"> 
+                <span *ngIf="mobile.errors.required">Please Enter Phone </span>
+                <span *ngIf="mobile.errors.minlength"> 10 digits only</span>
+              </div>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-success" [disabled]="!empForm.valid" (click)="addNewEmployee(empForm.value)"> Add
+            </button>
+            <button (click)="closeModal()"  class="btn btn-info"> close</button>
+          </div>
+        </form>
+      </div>
+
+    </div> 
+
+  </div>
+</div> 
+
+<!-- update  -->
+
+ 
+<div id="updateEmpModal" class="modal" tabindex="-1"    role="dialog"> 
+  <div class="modal-dialog">
+
+    
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" > Update Employee </h4>
+
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form #updateempForm="ngForm" novalidate>
+          <div class="form-group">
+            <input type="text" name="username"  class="form-control" placeholder="Employee Name" [(ngModel)]="username"
+              required>
+          </div>
+          <div class="form-group">
+            <input type="email"  name="email" class="form-control" placeholder="email" [(ngModel)]="email"
+              required>
+          </div>
+          <div class="form-group">
+            <input type="text"  name="address" class="form-control" placeholder="Address" [(ngModel)]="address"
+              required>
+          </div>
+          <div class="form-group">
+            <input type="tel"  name="phone" class="form-control" placeholder="phone number" [(ngModel)]="phone"
+              required>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-success" [disabled]="!updateempForm.valid" (click)="updateEmployee(updateempForm.value)"> Save
+            </button>
+            <button (click)="closeModal()" data-dismiss="modal" class="btn btn-info"> close</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+</div> 
+
+
+ 
+  
